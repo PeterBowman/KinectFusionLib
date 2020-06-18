@@ -2,10 +2,13 @@ cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 
 project(KinectFusionLib LANGUAGES CXX)
 
-# Use modern C++, set compiler flags
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+include(GNUInstallDirs)
+
+# Set compiler flags
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Weffc++")
+
+# Pick custom CMake modules
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
 # Setting output paths
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
@@ -24,18 +27,53 @@ find_package(OpenCV 3.0 REQUIRED COMPONENTS opencv_core
 find_package(Eigen3 3.3 REQUIRED)
 # ------------------------------------------------
 
-set(_header_dir ${CMAKE_SOURCE_DIR}/include)
-set(_sources_dir ${CMAKE_SOURCE_DIR}/src)
+file(GLOB _public_headers "${CMAKE_SOURCE_DIR}/include/*.h")
+file(GLOB _private_headers "${CMAKE_SOURCE_DIR}/src/cuda/include/*.h")
+file(GLOB _cxx_sources "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB _cuda_sources "${CMAKE_SOURCE_DIR}/src/cuda/*.cu")
 
-file(GLOB _sources "${_sources_dir}/cuda/*.cu" "${_sources_dir}/*.cpp")
+cuda_add_library(KinectFusion STATIC ${_public_headers}
+                                     ${_private_headers}
+                                     ${_cxx_sources}
+                                     ${_cuda_sources})
 
-cuda_add_library(KinectFusion STATIC "${_sources}")
+set_target_properties(KinectFusion PROPERTIES PUBLIC_HEADER "${_public_headers}")
 
-target_include_directories(KinectFusion PUBLIC ${_header_dir}
-                                               ${_sources_dir}/cuda/include
-                                               ${CUDA_INCLUDE_DIRS})
+target_include_directories(KinectFusion PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
+                                               $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDE_DIR}>
+                                               ${CUDA_INCLUDE_DIRS}
+                                        PRIVATE ${CMAKE_SOURCE_DIR}/src/cuda/include)
 
+# We cannot use PUBLIC here, see https://gitlab.kitware.com/cmake/cmake/-/issues/16602
 target_link_libraries(KinectFusion opencv_core
                                    opencv_cudaimgproc
                                    opencv_cudawarping
                                    Eigen3::Eigen)
+
+target_compile_options(KinectFusion PUBLIC -std=c++14)
+
+install(TARGETS KinectFusion
+        EXPORT KinectFusionLib
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+export(PACKAGE KinectFusionLib)
+
+set(_cmake_destination ${CMAKE_INSTALL_LIBDIR}/cmake/KinectFusionLib)
+
+file(WRITE ${CMAKE_BINARY_DIR}/KinectFusionLibConfig.cmake
+    "include(\${CMAKE_CURRENT_LIST_DIR}/KinectFusionLibTargets.cmake)")
+
+install(FILES ${CMAKE_BINARY_DIR}/KinectFusionLibConfig.cmake
+        DESTINATION ${_cmake_destination})
+
+export(EXPORT KinectFusionLib
+       FILE ${CMAKE_BINARY_DIR}/KinectFusionLibTargets.cmake)
+
+install(EXPORT KinectFusionLib
+        DESTINATION ${_cmake_destination}
+        FILE KinectFusionLibTargets.cmake)
+
+include(AddUninstallTarget)

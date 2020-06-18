@@ -122,3 +122,9 @@ cmake-build-debug/
 data/
 .idea/
 
+####################
+# IDE Specific #
+####################
+/.project
+/.cproject
+/.settings/

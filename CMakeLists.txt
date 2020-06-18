@@ -20,13 +20,9 @@ IF (CUDA_FOUND)
 ENDIF ()
 
 ## OpenCV
-# Optional: Set OpenCV_DIR if you want to use a custom version of OpenCV
-SET("OpenCV_DIR" "/opt/opencv/usr/local/share/OpenCV")
-find_package(OpenCV 3.0 REQUIRED)
-if (OpenCV_INCLUDE_DIRS)
-    include_directories("${OpenCV_INCLUDE_DIRS}")
-    link_directories(${OpenCV_DIR}/lib)
-endif (OpenCV_INCLUDE_DIRS)
+find_package(OpenCV 3.0 REQUIRED COMPONENTS opencv_core
+                                            opencv_cudaimgproc
+                                            opencv_cudawarping)
 
 ## Eigen3
 find_package(Eigen3 3.3 REQUIRED)
@@ -43,4 +39,8 @@ include_directories("${PROJECT_INCLUDE_DIR}" "${PROJECT_SOURCE_DIR}/cuda/include
 file(GLOB KinectFusion_SRCS "${PROJECT_SOURCE_DIR}/cuda/*.cu" "${PROJECT_SOURCE_DIR}/*.cpp")
 
 cuda_add_library(KinectFusion STATIC "${KinectFusion_SRCS}")
-target_link_libraries(KinectFusion "${OpenCV_LIBS}" Eigen3::Eigen)
+
+target_link_libraries(KinectFusion opencv_core
+                                   opencv_cudaimgproc
+                                   opencv_cudawarping
+                                   Eigen3::Eigen)

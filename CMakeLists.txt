@@ -29,10 +29,7 @@ if (OpenCV_INCLUDE_DIRS)
 endif (OpenCV_INCLUDE_DIRS)
 
 ## Eigen3
-find_package(Eigen3 REQUIRED)
-if (EIGEN3_INCLUDE_DIR)
-    include_directories("${EIGEN3_INCLUDE_DIR}")
-endif (EIGEN3_INCLUDE_DIR)
+find_package(Eigen3 3.3 REQUIRED)
 # ------------------------------------------------
 
 SET(CUDA_PROPAGATE_HOST_FLAGS OFF)
@@ -46,4 +43,4 @@ include_directories("${PROJECT_INCLUDE_DIR}" "${PROJECT_SOURCE_DIR}/cuda/include
 file(GLOB KinectFusion_SRCS "${PROJECT_SOURCE_DIR}/cuda/*.cu" "${PROJECT_SOURCE_DIR}/*.cpp")
 
 cuda_add_library(KinectFusion STATIC "${KinectFusion_SRCS}")
-target_link_libraries(KinectFusion "${OpenCV_LIBS}")
+target_link_libraries(KinectFusion "${OpenCV_LIBS}" Eigen3::Eigen)

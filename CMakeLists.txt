@@ -16,7 +16,7 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 # ------------------------------------------------
 #                 Dependencies
 # ------------------------------------------------
-find_package(CUDA 8.0 REQUIRED REQUIRED)
+find_package(CUDA 8.0 REQUIRED)
 set(CUDA_PROPAGATE_HOST_FLAGS OFF)
 set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-O3;-std=c++11 -gencode arch=compute_52,code=sm_52")
 
@@ -63,8 +63,8 @@ export(PACKAGE KinectFusionLib)
 
 set(_cmake_destination ${CMAKE_INSTALL_LIBDIR}/cmake/KinectFusionLib)
 
-file(WRITE ${CMAKE_BINARY_DIR}/KinectFusionLibConfig.cmake
-    "include(\${CMAKE_CURRENT_LIST_DIR}/KinectFusionLibTargets.cmake)")
+configure_file(${CMAKE_SOURCE_DIR}/cmake/templates/KinectFusionLibConfig.cmake.in
+               ${CMAKE_BINARY_DIR}/KinectFusionLibConfig.cmake @ONLY)
 
 install(FILES ${CMAKE_BINARY_DIR}/KinectFusionLibConfig.cmake
         DESTINATION ${_cmake_destination})

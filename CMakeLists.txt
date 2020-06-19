@@ -45,7 +45,7 @@ set_target_properties(KinectFusion PROPERTIES PUBLIC_HEADER "${_headers}")
 
 target_include_directories(KinectFusion PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
                                                $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/cuda/include>
-                                               $<INSTALL_INTERFACE:{CMAKE_INSTALL_INCLUDE_DIR}>
+                                               $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDE_DIR}>
                                                ${CUDA_INCLUDE_DIRS})
 
 target_link_libraries(KinectFusion PUBLIC opencv_core

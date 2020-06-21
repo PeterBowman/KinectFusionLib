@@ -6,7 +6,6 @@ include(GNUInstallDirs)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
-# Setting output paths
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 find_package(CUDA 8.0 REQUIRED)
@@ -22,14 +21,16 @@ find_package(Eigen3 3.3 REQUIRED)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Weffc++")
 
-set(_headers ${CMAKE_SOURCE_DIR}/include/kinectfusion.h
-             ${CMAKE_SOURCE_DIR}/include/data_types.h
-             ${CMAKE_SOURCE_DIR}/src/cuda/include/common.h
-             ${CMAKE_SOURCE_DIR}/src/cuda/include/mc_tables.h)
+set(_headers ${CMAKE_SOURCE_DIR}/kinectfusion/kinectfusion.h
+             ${CMAKE_SOURCE_DIR}/kinectfusion/data_types.h)
 
 set(_sources ${CMAKE_SOURCE_DIR}/src/kinectfusion.cpp
              ${CMAKE_SOURCE_DIR}/src/pose_estimation.cpp
              ${CMAKE_SOURCE_DIR}/src/surface_measurement.cpp
+             ${CMAKE_SOURCE_DIR}/src/internal/kinectfusion.h
+             ${CMAKE_SOURCE_DIR}/src/internal/data_types.h
+             ${CMAKE_SOURCE_DIR}/src/internal/cuda_common.h
+             ${CMAKE_SOURCE_DIR}/src/internal/mc_tables.h
              ${CMAKE_SOURCE_DIR}/src/cuda/extract_pointcloud.cu
              ${CMAKE_SOURCE_DIR}/src/cuda/marching_cubes.cu
              ${CMAKE_SOURCE_DIR}/src/cuda/pose_estimation.cu
@@ -43,24 +44,24 @@ target_sources(KinectFusion PRIVATE ${_headers} ${_sources})
 
 set_target_properties(KinectFusion PROPERTIES PUBLIC_HEADER "${_headers}")
 
-target_include_directories(KinectFusion PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/include>
-                                               $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/src/cuda/include>
+target_include_directories(KinectFusion PUBLIC $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}>
                                                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDE_DIR}>
                                                ${CUDA_INCLUDE_DIRS})
 
 target_link_libraries(KinectFusion PUBLIC opencv_core
-                                          opencv_cudaimgproc
-                                          opencv_cudawarping
-                                          Eigen3::Eigen)
+                                          Eigen3::Eigen
+                                   PRIVATE opencv_cudaimgproc
+                                           opencv_cudawarping)
 
-target_compile_features(KinectFusion PUBLIC cxx_std_14)
+target_compile_features(KinectFusion PUBLIC cxx_std_11
+                                     PRIVATE cxx_std_14)
 
 install(TARGETS KinectFusion
         EXPORT KinectFusionLib
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+        PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/kinectfusion)
 
 export(PACKAGE KinectFusionLib)
 

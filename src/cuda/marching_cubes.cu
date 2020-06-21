@@ -7,8 +7,8 @@
 #include <thrust/scan.h>
 
 // Internals
-#include "include/common.h"
-#include "include/mc_tables.h"
+#include "../internal/cuda_common.h"
+#include "../internal/mc_tables.h"
 
 using cv::cuda::GpuMat;
 

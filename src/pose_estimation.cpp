@@ -1,14 +1,16 @@
 // This is the CPU part of the ICP implementation
 // Author: Christian Diller, git@christian-diller.de
 
-#include <kinectfusion.h>
+#include "./internal/kinectfusion.h"
+
+#include <cmath> // std::abs, std::isnan
+#include <opencv2/core/cuda.hpp>
+#include <Eigen/Core>
 
 using Matf31da = Eigen::Matrix<float, 3, 1, Eigen::DontAlign>;
-using Matrix3frm = Eigen::Matrix<float, 3, 3, Eigen::RowMajor>;
 
 namespace kinectfusion {
     namespace internal {
-
         namespace cuda { // Forward declare CUDA functions
             void estimate_step(const Eigen::Matrix3f& rotation_current, const Matf31da& translation_current,
                                const cv::cuda::GpuMat& vertex_map_current, const cv::cuda::GpuMat& normal_map_current,
@@ -51,7 +53,7 @@ namespace kinectfusion {
 
                     // Solve equation to get alpha, beta and gamma
                     double det = A.determinant();
-                    if (fabs(det) < 100000 /*1e-15*/ || std::isnan(det))
+                    if (std::abs(det) < 100000 /*1e-15*/ || std::isnan(det))
                         return false;
                     Eigen::Matrix<float, 6, 1> result { A.fullPivLu().solve(b).cast<float>() };
                     float alpha = result(0);

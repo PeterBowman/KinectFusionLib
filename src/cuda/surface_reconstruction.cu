@@ -2,7 +2,7 @@
 // This is CUDA code; compile with nvcc
 // Author: Christian Diller, git@christian-diller.de
 
-#include "include/common.h"
+#include "../internal/cuda_common.h"
 
 using Vec2ida = Eigen::Matrix<int, 2, 1, Eigen::DontAlign>;
 

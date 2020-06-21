@@ -2,7 +2,7 @@
 // This is CUDA code; compile with nvcc
 // Author: Christian Diller, git@christian-diller.de
 
-#include "include/common.h"
+#include "../internal/cuda_common.h"
 
 using cv::cuda::GpuMat;
 

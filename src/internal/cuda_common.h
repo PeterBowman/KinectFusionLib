@@ -15,7 +15,7 @@ using threadIdx = struct { int x; int y; int z; };
 using blockIdx = struct { int x; int y; int z; };
 #endif
 
-#include <data_types.h>
+#include "./data_types.h"
 
 #define DIVSHORTMAX 0.0000305185f //1.f / SHRT_MAX;
 #define SHORTMAX 32767 //SHRT_MAX;

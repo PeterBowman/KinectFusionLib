@@ -1,11 +1,12 @@
 // This is the KinectFusion Pipeline Implementation
 // Author: Christian Diller, git@christian-diller.de
 
-#include <kinectfusion.h>
+#include "kinectfusion/kinectfusion.h"
+#include "./internal/kinectfusion.h"
 
 #include <fstream>
-
-using cv::cuda::GpuMat;
+#include <cuda_runtime.h>
+#include <opencv2/core/core.hpp>
 
 namespace kinectfusion {
 

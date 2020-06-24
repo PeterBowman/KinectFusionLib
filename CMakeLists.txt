@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.7 FATAL_ERROR)
 
 project(KinectFusionLib LANGUAGES CXX)
 
@@ -18,7 +18,8 @@ set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 # ------------------------------------------------
 find_package(CUDA 8.0 REQUIRED)
 set(CUDA_PROPAGATE_HOST_FLAGS OFF)
-set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-O3;-std=c++11 -gencode arch=compute_52,code=sm_52")
+cuda_select_nvcc_arch_flags(gpu_flags)
+set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-O3;-std=c++11;${gpu_flags}")
 
 find_package(OpenCV 3.0 REQUIRED COMPONENTS opencv_core
                                             opencv_cudaimgproc
